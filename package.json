@@ -1,0 +1,25 @@
+{
+  "name": "aura-chat",
+  "version": "1.0.0",
+  "description": "Full-stack real-time chat application",
+  "main": "Backend/src/index.js",
+  "scripts": {
+    "install": "cd Backend && npm install && cd ../Frontend && npm install",
+    "build": "cd Frontend && npm run build",
+    "start": "cd Backend && npm start",
+    "dev:backend": "cd Backend && npm run dev",
+    "dev:frontend": "cd Frontend && npm run dev"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "chat",
+    "real-time",
+    "socketio",
+    "react",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "ISC"
+}

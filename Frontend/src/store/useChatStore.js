@@ -26,24 +26,15 @@ export const useChatStore = create((set, get) => ({
 
   // Helper function to move user to top of list
   moveUserToTop: (userId) => {
-    console.log("🔝 Moving user to top:", userId);
     set((state) => {
       const userIndex = state.users.findIndex(u => u._id === userId);
-      console.log("📍 User index:", userIndex, "Total users:", state.users.length);
       
-      if (userIndex === -1) {
-        console.log("❌ User not found in list");
-        return state; // User not found
-      }
-      if (userIndex === 0) {
-        console.log("✅ User already at top");
-        return state; // Already at top
-      }
+      if (userIndex === -1) return state; // User not found
+      if (userIndex === 0) return state; // Already at top
       
       const updatedUsers = [...state.users];
       const [user] = updatedUsers.splice(userIndex, 1);
       updatedUsers.unshift(user);
-      console.log("✅ Moved user to top:", user.fullName);
       return { users: updatedUsers };
     });
   },
