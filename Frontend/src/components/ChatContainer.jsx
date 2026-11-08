@@ -58,10 +58,10 @@ const ChatContainer = () => {
   }
 
   return (
-    <div className="h-full flex flex-col animated-gradient">
+    <div className="h-full flex flex-col">
       <ChatHeader />
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 animated-gradient">
         {messages.map((message, index) => {
           const isOwnMessage = message.senderId === authUser._id;
           const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;

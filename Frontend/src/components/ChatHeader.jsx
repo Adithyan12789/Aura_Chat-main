@@ -8,7 +8,7 @@ const ChatHeader = () => {
   const isOnline = onlineUsers.includes(selectedUser._id);
 
   return (
-    <div className="p-4 border-b-2 border-primary/20 bg-base-100 shadow-sm">
+    <div className="p-4 border-b-2 border-primary/20 bg-base-100 shadow-sm relative z-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* Avatar */}
@@ -26,11 +26,11 @@ const ChatHeader = () => {
           </div>
 
           {/* User info */}
-          <div>
-            <h3 className="font-semibold text-lg text-base-content">{selectedUser.fullName}</h3>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-lg text-base-content truncate">{selectedUser.fullName}</h3>
             <p className="text-sm flex items-center gap-1.5">
-              <span className={`size-2 rounded-full ${isOnline ? 'bg-success animate-pulse' : 'bg-base-content/30'}`} />
-              <span className={isOnline ? 'text-success font-medium' : 'text-base-content/60'}>
+              <span className={`size-2 rounded-full flex-shrink-0 ${isOnline ? 'bg-success animate-pulse' : 'bg-base-content/30'}`} />
+              <span className={`flex-shrink-0 ${isOnline ? 'text-success font-medium' : 'text-base-content/60'}`}>
                 {isOnline ? "Online" : "Offline"}
               </span>
             </p>
@@ -38,7 +38,7 @@ const ChatHeader = () => {
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <button
             className="btn btn-ghost btn-sm btn-circle hover:bg-primary/10 hover:text-primary hover-glow text-base-content"
             title="More options"
