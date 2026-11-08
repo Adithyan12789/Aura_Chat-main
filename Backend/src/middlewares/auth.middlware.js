@@ -3,7 +3,16 @@ import User from "../models/user.model.js";
 
 export const isAuthenticated = async (req, res, next) => {
     try {
-        const token = req.cookies.jwt;
+        // Support both cookie and Authorization header for cross-origin requests
+        let token = req.cookies.jwt;
+        
+        // If no cookie, check Authorization header
+        if (!token && req.headers.authorization) {
+            const authHeader = req.headers.authorization;
+            if (authHeader.startsWith('Bearer ')) {
+                token = authHeader.substring(7);
+            }
+        }
 
         if (!token) {
             return res.status(401).json({ message: "Unauthorized - No token provided" });

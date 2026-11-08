@@ -27,13 +27,14 @@ export const signup = async (req, res) => {
         const newUser = new User({ fullName, email, password: hashedPassword });
 
         if (newUser) {
-            generateToken(res, newUser._id);
+            const token = generateToken(res, newUser._id);
             await newUser.save();
             return res.status(201).json({
                 _id: newUser._id,
                 fullName: newUser.fullName,
                 email: newUser.email,
                 profilePic: newUser.profilePic,
+                token: token // Send token in response
             });
         } else {
             return res.status(400).json({ message: "Invalid user data" });
@@ -67,6 +68,7 @@ export const login = async (req, res) => {
             fullName: user.fullName,
             email: user.email,
             profilePic: user.profilePic,
+            token: generateToken(res, user._id) // Send token in response
         });
     } catch (error) {
         console.log("Error in login controller", error.message);
