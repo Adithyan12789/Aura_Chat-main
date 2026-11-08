@@ -1,7 +1,7 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import cloudinary from "../lib/cloudinary.js";
+import { uploadToImgBB } from "../lib/imgbb.js";
 
 export const signup = async (req, res) => {
     try {
@@ -101,14 +101,12 @@ export const updateProfile = async (req, res) => {
         }
 
         try {
-            const uploadResponse = await cloudinary.uploader.upload(profilePic, {
-                folder: "profile_pictures",
-                resource_type: "auto"
-            });
+            // Upload to ImgBB
+            const imageUrl = await uploadToImgBB(profilePic);
 
             const updatedUser = await User.findByIdAndUpdate(
                 userId,
-                { profilePic: uploadResponse.secure_url },
+                { profilePic: imageUrl },
                 { new: true }
             ).select("-password");
 
@@ -118,7 +116,7 @@ export const updateProfile = async (req, res) => {
 
             res.status(200).json(updatedUser);
         } catch (uploadError) {
-            console.error("Error uploading to cloudinary:", uploadError);
+            console.error("Error uploading to ImgBB:", uploadError);
             return res.status(500).json({ message: "Failed to upload profile picture" });
         }
     } catch (error) {

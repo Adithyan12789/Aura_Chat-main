@@ -1,6 +1,6 @@
 
 
-import cloudinary from "../lib/cloudinary.js";
+import { uploadToImgBB } from "../lib/imgbb.js";
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
@@ -58,30 +58,21 @@ export const sendMessage = async (req, res) => {
     let imageUrl;
     if (image) {
       try {
-        console.log("Attempting to upload image to Cloudinary...");
+        console.log("Attempting to upload image to ImgBB...");
         
-        // Validate Cloudinary config
-        if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-          console.error("Cloudinary credentials missing");
+        // Validate ImgBB API key
+        if (!process.env.IMGBB_API_KEY) {
+          console.error("ImgBB API key missing");
           return res.status(500).json({ message: "Image upload service not configured" });
         }
 
-        // Upload base64 image to cloudinary
-        const uploadResponse = await cloudinary.uploader.upload(image, {
-          folder: "chat_images",
-          resource_type: "auto",
-          transformation: [
-            { width: 1000, height: 1000, crop: 'limit' }
-          ]
-        });
+        // Upload to ImgBB
+        imageUrl = await uploadToImgBB(image);
         
-        imageUrl = uploadResponse.secure_url;
         console.log("Image uploaded successfully:", imageUrl);
       } catch (uploadError) {
-        console.error("Cloudinary upload error details:", {
-          message: uploadError.message,
-          error: uploadError.error,
-          http_code: uploadError.http_code
+        console.error("ImgBB upload error details:", {
+          message: uploadError.message
         });
         return res.status(500).json({ 
           message: "Failed to upload image", 
