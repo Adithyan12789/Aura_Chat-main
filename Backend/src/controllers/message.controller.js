@@ -42,22 +42,51 @@ export const sendMessage = async (req, res) => {
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
+    console.log("SendMessage - receiverId:", receiverId, "senderId:", senderId);
+
     if (!text && !image) {
       return res.status(400).json({ message: "Message must contain text or image" });
+    }
+
+    // Validate receiver exists
+    const receiver = await User.findById(receiverId);
+    if (!receiver) {
+      console.error("Receiver not found:", receiverId);
+      return res.status(404).json({ message: "Receiver not found" });
     }
 
     let imageUrl;
     if (image) {
       try {
+        console.log("Attempting to upload image to Cloudinary...");
+        
+        // Validate Cloudinary config
+        if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+          console.error("Cloudinary credentials missing");
+          return res.status(500).json({ message: "Image upload service not configured" });
+        }
+
         // Upload base64 image to cloudinary
         const uploadResponse = await cloudinary.uploader.upload(image, {
           folder: "chat_images",
-          resource_type: "auto"
+          resource_type: "auto",
+          transformation: [
+            { width: 1000, height: 1000, crop: 'limit' }
+          ]
         });
+        
         imageUrl = uploadResponse.secure_url;
+        console.log("Image uploaded successfully:", imageUrl);
       } catch (uploadError) {
-        console.error("Error uploading image to cloudinary:", uploadError);
-        return res.status(500).json({ message: "Failed to upload image" });
+        console.error("Cloudinary upload error details:", {
+          message: uploadError.message,
+          error: uploadError.error,
+          http_code: uploadError.http_code
+        });
+        return res.status(500).json({ 
+          message: "Failed to upload image", 
+          details: uploadError.message 
+        });
       }
     }
 
@@ -69,16 +98,25 @@ export const sendMessage = async (req, res) => {
     });
 
     await newMessage.save();
+    console.log("Message saved successfully:", newMessage._id);
 
     // Send to receiver via socket
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
+      console.log("Message sent via socket to:", receiverSocketId);
     }
 
     res.status(201).json(newMessage);
   } catch (error) {
-    console.log("Error in sendMessage controller:", error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error in sendMessage controller:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    res.status(500).json({ 
+      message: "Internal server error",
+      details: error.message 
+    });
   }
 };
