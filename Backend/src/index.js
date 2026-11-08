@@ -34,7 +34,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: process.env.NODE_ENV === "production"
-      ? process.env.FRONTEND_URL
+      ? ["https://aurachat-phi.vercel.app", "https://aura-chat-main.onrender.com"]
       : "http://localhost:5173",
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
