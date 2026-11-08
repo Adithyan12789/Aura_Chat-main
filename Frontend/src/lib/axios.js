@@ -13,6 +13,20 @@ export const axiosInstance = axios.create({
     }
 });
 
+// Add request interceptor to include token in every request
+axiosInstance.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
 // Add response interceptor for better error handling
 axiosInstance.interceptors.response.use(
     (response) => response,
@@ -21,6 +35,10 @@ axiosInstance.interceptors.response.use(
             toast.error('Network error. Please check your connection.');
         } else if (error.response?.status === 413) {
             toast.error('File size too large. Please try a smaller file.');
+        } else if (error.response?.status === 401) {
+            // Token expired or invalid - clear it
+            localStorage.removeItem('token');
+            delete axiosInstance.defaults.headers.common['Authorization'];
         }
         return Promise.reject(error);
     }
