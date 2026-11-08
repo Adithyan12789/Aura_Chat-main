@@ -10,8 +10,15 @@ const HomePage = () => {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <div className="flex-1 flex overflow-hidden">
-        <Sidebar />
-        {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
+        {/* Sidebar with right border */}
+        <div className="border-r-2 border-primary/20">
+          <Sidebar />
+        </div>
+        
+        {/* Chat container */}
+        <div className="flex-1">
+          {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
+        </div>
       </div>
     </div>
   );
