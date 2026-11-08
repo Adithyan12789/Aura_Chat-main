@@ -4,7 +4,7 @@
   "description": "Full-stack real-time chat application",
   "main": "Backend/src/index.js",
   "scripts": {
-    "install": "cd Backend && npm install && cd ../Frontend && npm install",
+    "postinstall": "cd Backend && npm install && cd ../Frontend && npm install",
     "build": "cd Frontend && npm run build",
     "start": "cd Backend && npm start",
     "dev:backend": "cd Backend && npm run dev",
